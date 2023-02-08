@@ -31,6 +31,23 @@ describe("replaceMapAttrs", () => {
     })
     expect(result).toEqual(`<p className="test">a</p><!-- class= -->`)
   })
+
+  it("Replace with containing a newline", () => {
+    const result = replaceMapAttrs(
+      `<p
+  class="test"
+  data-a="test"
+>a</p>`,
+      {
+        class: "className",
+        "data-a": "data-b",
+      }
+    )
+    expect(result).toEqual(`<p
+  className="test"
+  data-b="test"
+>a</p>`)
+  })
 })
 
 describe("replaceStyleName", () => {
@@ -86,7 +103,7 @@ describe("replaceStyleTags", () => {
       `<style>.test > a { display: block; }</style>`
     )
     expect(result).toEqual(
-      `<style dangerouslySetInnerHTML={{ __html: ".test > a { display: block; }" }} />`
+      `<style dangerouslySetInnerHTML={{ __html: \`.test > a { display: block; }\` }} />`
     )
   })
 
@@ -99,7 +116,7 @@ describe("replaceStyleTags", () => {
 </style>`
     )
     expect(result).toEqual(
-      `<style dangerouslySetInnerHTML={{ __html: "\n  .test > a {\n    display: block;\n  }\n" }} />`
+      `<style dangerouslySetInnerHTML={{ __html: \`\n  .test > a {\n    display: block;\n  }\n\` }} />`
     )
   })
 
@@ -116,7 +133,7 @@ describe("replaceScriptTags", () => {
   it("Default", () => {
     const result = replaceScriptTags(`<script>console.log("test")</script>`)
     expect(result).toEqual(
-      `<script dangerouslySetInnerHTML={{ __html: "console.log(\"test\")" }} />`
+      `<script dangerouslySetInnerHTML={{ __html: \`console.log(\"test\")\` }} />`
     )
   })
 
@@ -125,7 +142,7 @@ describe("replaceScriptTags", () => {
   console.log("test")
 </script>`)
     expect(result).toEqual(
-      `<script dangerouslySetInnerHTML={{ __html: "\n  console.log(\"test\")\n" }} />`
+      `<script dangerouslySetInnerHTML={{ __html: \`\n  console.log(\"test\")\n\` }} />`
     )
   })
 
