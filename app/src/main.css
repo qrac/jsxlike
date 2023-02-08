@@ -1,0 +1,48 @@
+:root {
+  --theme-font-sans: "Hiragino Sans", "Hiragino Kaku Gothic ProN",
+    "Noto Sans Japanese", Meiryo, "Yu Gothic Medium", sans-serif,
+    "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol";
+  --theme-font-mono: source-code-pro, Menlo, Monaco, Consolas, "Courier New",
+    monospace;
+}
+
+:root {
+  --theme-tx-1: #f7f6f4;
+  --theme-tx-2: #c7c7ca;
+  --theme-tx-3: #747886;
+  --theme-tx-4: #3f404c;
+  --theme-bg-1: #262626;
+  --theme-bg-2: #282a37;
+  --theme-bg-3: #353747;
+  --theme-bd-1: #62646d;
+  --theme-ac-1: #ff7fc7;
+  --theme-ac-2: #80e3f4;
+  --theme-ac-3: #e5ee8c;
+  --theme-ac-4: #00ea78;
+  --theme-ac-5: #c59cf4;
+}
+
+*,
+:before,
+:after {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  font-family: inherit;
+}
+
+html {
+  font-family: var(--theme-font-sans);
+  word-break: break-word;
+  -ms-text-size-adjust: 100%;
+  -webkit-text-size-adjust: none;
+  -webkit-tap-highlight-color: transparent;
+}
+
+body {
+  background-color: var(--theme-bg-1);
+  color: var(--theme-tx-1);
+  font-size: 16px;
+  line-height: 1.5;
+  word-break: break-word;
+}
