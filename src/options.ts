@@ -34,6 +34,6 @@ export const defaultOptions: Options = {
     frameborder: "frameBorder",
     "xlink:href": "href",
   },
-  noSlashTags: ["meta", "link", "br"],
+  noSlashTags: ["meta", "link", "input", "br"],
   emptyTags: ["*"],
 }

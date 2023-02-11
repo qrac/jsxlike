@@ -34,7 +34,9 @@ export default function () {
           </a>
         </header>
         {/* - Header */}
-        <main className="main" />
+        <main className="main">
+          <input type="checkbox" checked />
+        </main>
       </body>
     </html>
   )
