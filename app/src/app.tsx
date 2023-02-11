@@ -1,22 +1,28 @@
 import { useState } from "react"
 import jsBeautify from "js-beautify"
 
+import defaultHtml from "../syntax/default.html?raw"
 import "./app.css"
 import jsxlike from "../../src"
 
+function htmlToJsx(value: string) {
+  return jsBeautify.html(jsxlike(value), {
+    indent_size: 2,
+    max_preserve_newlines: 0,
+    indent_inner_html: true,
+    extra_liners: [],
+    inline: ["span", "strong", "b", "small", "del", "s", "code", "br", "wbr"],
+  })
+}
+
 export default function App() {
-  const [jsxOutput, setJsxOutput] = useState("")
+  const defaultHtmlStr = defaultHtml.replace(/^<!-- prettier-ignore -->\n/, "")
+  const defaultJsxStr = htmlToJsx(defaultHtmlStr)
+
+  const [jsxOutput, setJsxOutput] = useState(defaultJsxStr)
 
   function handleInputChange(event: React.ChangeEvent<HTMLTextAreaElement>) {
-    const value = jsxlike(event.target.value)
-    const result = jsBeautify.html(value, {
-      indent_size: 2,
-      max_preserve_newlines: 0,
-      indent_inner_html: true,
-      extra_liners: [],
-      inline: ["span", "strong", "b", "small", "del", "s", "code", "br", "wbr"],
-    })
-    setJsxOutput(result)
+    setJsxOutput(htmlToJsx(event.target.value))
   }
   return (
     <>
@@ -39,7 +45,7 @@ export default function App() {
               <textarea
                 id="textarea-html"
                 className="block-editor-textarea"
-                defaultValue=""
+                defaultValue={defaultHtmlStr}
                 onChange={handleInputChange}
               />
             </div>
