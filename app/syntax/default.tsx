@@ -35,6 +35,8 @@ export default function () {
         </header>
         {/* - Header */}
         <main className="main">
+          {/* main content
+      input checkbox! */}
           <input type="checkbox" checked />
         </main>
       </body>

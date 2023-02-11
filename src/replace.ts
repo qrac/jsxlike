@@ -93,10 +93,10 @@ export function replaceCommentTags(input: string, erase?: boolean) {
   let value = input
 
   if (erase) {
-    const reg = new RegExp(`<!--(?!-->).*?-->`, "g")
+    const reg = new RegExp(`<!--(?!-->)[\\s\\S]*?-->`, "g")
     return value.replace(reg, "")
   } else {
-    const reg = new RegExp(`<!--((?!-->).*?)-->`, "g")
+    const reg = new RegExp(`<!--((?!-->)[\\s\\S]*?)-->`, "g")
     return value.replace(reg, `{/*$1*/}`)
   }
 }

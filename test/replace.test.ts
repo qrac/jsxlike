@@ -161,6 +161,13 @@ describe("replaceCommentTags", () => {
     expect(result).toEqual(`{/* a */}<p>b</p>{/* c */}`)
   })
 
+  it("Containing a newline", () => {
+    const result = replaceCommentTags(`<!-- aaa
+aaa --><p>b</p><!-- c -->`)
+    expect(result).toEqual(`{/* aaa
+aaa */}<p>b</p>{/* c */}`)
+  })
+
   it("Erase", () => {
     const result = replaceCommentTags(`<!-- a --><p>b</p><!-- c -->`, true)
     expect(result).toEqual(`<p>b</p>`)
