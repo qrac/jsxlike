@@ -1,15 +1,61 @@
 import { describe, expect, it } from "vitest"
 
 import {
-  replaceMapAttrs,
-  replaceSlashTags,
   replaceEmptyTags,
+  replaceSlashTags,
+  replaceMapAttrs,
   replaceStyleName,
   replaceStyleAttrs,
   replaceStyleTags,
   replaceScriptTags,
   replaceCommentTags,
 } from "../src/replace"
+
+describe("replaceEmptyTags", () => {
+  it("Blank", () => {
+    const result = replaceEmptyTags(`<p class="a"></p><div></div><a></a>`, [])
+    expect(result).toEqual(`<p class="a"></p><div></div><a></a>`)
+  })
+
+  it("All", () => {
+    const result = replaceEmptyTags(`<p class="a"></p><div></div><a></a>`, [
+      "*",
+    ])
+    expect(result).toEqual(`<p class="a" /><div /><a />`)
+  })
+
+  it("All with containing a newline", () => {
+    const result = replaceEmptyTags(
+      `<p class="a">
+    </p>
+<div></div>
+<a>
+</a>`,
+      ["*"]
+    )
+    expect(result).toEqual(`<p class="a" />\n<div />\n<a />`)
+  })
+
+  it("Tags", () => {
+    const result = replaceEmptyTags(`<p class="a"></p><div></div><a></a>`, [
+      "p",
+      "a",
+    ])
+    expect(result).toEqual(`<p class="a" /><div></div><a />`)
+  })
+})
+
+describe("replaceSlashTags", () => {
+  it("Blank", () => {
+    const result = replaceSlashTags(`<meta name="viewport">`, [])
+    expect(result).toEqual(`<meta name="viewport">`)
+  })
+
+  it("Replace", () => {
+    const result = replaceSlashTags(`<meta name="viewport">`, ["meta"])
+    expect(result).toEqual(`<meta name="viewport" />`)
+  })
+})
 
 describe("replaceMapAttrs", () => {
   it("Blank", () => {
@@ -47,52 +93,6 @@ describe("replaceMapAttrs", () => {
   className="test"
   data-b="test"
 >a</p>`)
-  })
-})
-
-describe("replaceSlashTags", () => {
-  it("Blank", () => {
-    const result = replaceSlashTags(`<meta name="viewport">`, [])
-    expect(result).toEqual(`<meta name="viewport">`)
-  })
-
-  it("Replace", () => {
-    const result = replaceSlashTags(`<meta name="viewport">`, ["meta"])
-    expect(result).toEqual(`<meta name="viewport" />`)
-  })
-})
-
-describe("replaceEmptyTags", () => {
-  it("Blank", () => {
-    const result = replaceEmptyTags(`<p class="a"></p><div></div><a></a>`, [])
-    expect(result).toEqual(`<p class="a"></p><div></div><a></a>`)
-  })
-
-  it("All", () => {
-    const result = replaceEmptyTags(`<p class="a"></p><div></div><a></a>`, [
-      "*",
-    ])
-    expect(result).toEqual(`<p class="a" /><div /><a />`)
-  })
-
-  it("All with containing a newline", () => {
-    const result = replaceEmptyTags(
-      `<p class="a">
-    </p>
-<div></div>
-<a>
-</a>`,
-      ["*"]
-    )
-    expect(result).toEqual(`<p class="a" />\n<div />\n<a />`)
-  })
-
-  it("Tags", () => {
-    const result = replaceEmptyTags(`<p class="a"></p><div></div><a></a>`, [
-      "p",
-      "a",
-    ])
-    expect(result).toEqual(`<p class="a" /><div></div><a />`)
   })
 })
 

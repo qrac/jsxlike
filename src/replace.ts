@@ -1,19 +1,16 @@
-export function replaceMapAttrs(
-  input: string,
-  attrMaps?: { [attr: string]: string }
-) {
+export function replaceEmptyTags(input: string, tagNames?: string[]) {
   let value = input
 
-  const attrItems = Object.entries(attrMaps || {})
-
-  if (!attrItems.length) {
+  if (!tagNames?.length) {
     return value
   }
-  attrItems.map((item) => {
-    const htmlAttr = item[0]
-    const reactAttr = item[1]
-    const reg = new RegExp(`(<(?!!--)[^>]+)${htmlAttr}=`, "g")
-    value = value.replace(reg, `$1${reactAttr}=`)
+  if (tagNames.includes("*")) {
+    const reg = new RegExp(`<(\\w+)([^>]*)>\\s*</\\1>`, "g")
+    return value.replace(reg, "<$1$2 />")
+  }
+  tagNames.map((tagName) => {
+    const reg = new RegExp(`(<${tagName}[^>]*)>\\s*</${tagName}>`, "g")
+    value = value.replace(reg, `$1 />`)
     return
   })
   return value
@@ -33,19 +30,22 @@ export function replaceSlashTags(input: string, tagNames?: string[]) {
   return value
 }
 
-export function replaceEmptyTags(input: string, tagNames?: string[]) {
+export function replaceMapAttrs(
+  input: string,
+  attrMaps?: { [attr: string]: string }
+) {
   let value = input
 
-  if (!tagNames?.length) {
+  const attrItems = Object.entries(attrMaps || {})
+
+  if (!attrItems.length) {
     return value
   }
-  if (tagNames.includes("*")) {
-    const reg = new RegExp(`<(\\w+)([^>]*)>\\s*</\\1>`, "g")
-    return value.replace(reg, "<$1$2 />")
-  }
-  tagNames.map((tagName) => {
-    const reg = new RegExp(`(<${tagName}[^>]*)>\\s*</${tagName}>`, "g")
-    value = value.replace(reg, `$1 />`)
+  attrItems.map((item) => {
+    const htmlAttr = item[0]
+    const reactAttr = item[1]
+    const reg = new RegExp(`(<(?!!--)[^>]+)${htmlAttr}=`, "g")
+    value = value.replace(reg, `$1${reactAttr}=`)
     return
   })
   return value

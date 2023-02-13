@@ -1,7 +1,7 @@
 export type Options = {
-  mapAttrs?: { [attr: string]: string }
-  slashTags?: string[]
   emptyTags?: string[]
+  slashTags?: string[]
+  mapAttrs?: { [attr: string]: string }
   styleAttrs?: boolean
   styleTags?: boolean | "erase"
   scriptTags?: boolean | "erase"
@@ -11,6 +11,8 @@ export type Options = {
 export type ResolvedOptions = Required<Options>
 
 export const defaultOptions: ResolvedOptions = {
+  emptyTags: ["*"],
+  slashTags: ["meta", "link", "input", "br"],
   mapAttrs: {
     class: "className",
     charset: "charSet",
@@ -26,8 +28,6 @@ export const defaultOptions: ResolvedOptions = {
     frameborder: "frameBorder",
     "xlink:href": "href",
   },
-  slashTags: ["meta", "link", "input", "br"],
-  emptyTags: ["*"],
   styleAttrs: true,
   styleTags: true,
   scriptTags: true,
