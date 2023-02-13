@@ -1,42 +1,45 @@
 import type { Options } from "./options"
 import { defaultOptions } from "./options"
 import {
-  replaceMapAttrs,
+  replaceAttrMaps,
+  replaceSlashTags,
   replaceStyleAttrs,
   replaceStyleTags,
   replaceScriptTags,
   replaceCommentTags,
-  replaceNoSlashTags,
   replaceEmptyTags,
 } from "./replace"
 
 function jsxlike(input: string, options?: Options) {
   const resolvedOptions = { ...defaultOptions, ...options }
   const {
-    changeMapAttrs,
-    changeStyleAttrs,
-    changeStyleTags,
-    changeScriptTags,
-    changeCommentTags,
-    changeNoSlashTags,
-    changeEmptyTags,
-    mapAttrs,
-    noSlashTags,
+    attrMaps,
+    slashTags,
     emptyTags,
+    styleAttrs,
+    styleTags,
+    scriptTags,
+    commentTags,
   } = resolvedOptions
-  const eraseStyleTags = changeStyleTags === "erase"
-  const eraseScriptTags = changeScriptTags === "erase"
-  const eraseCommentTags = changeCommentTags === "erase"
+
+  const changeAttrMaps = Object.keys(attrMaps).length > 0
+  const changeSlashTags = slashTags.length > 0
+  const changeEmptyTags = emptyTags.length > 0
+
+  const eraseStyleTags = styleTags === "erase"
+  const eraseScriptTags = scriptTags === "erase"
+  const eraseCommentTags = commentTags === "erase"
 
   let value = input
 
-  changeMapAttrs && (value = replaceMapAttrs(value, mapAttrs))
-  changeStyleAttrs && (value = replaceStyleAttrs(value))
-  changeStyleTags && (value = replaceStyleTags(value, eraseStyleTags))
-  changeScriptTags && (value = replaceScriptTags(value, eraseScriptTags))
-  changeCommentTags && (value = replaceCommentTags(value, eraseCommentTags))
-  changeNoSlashTags && (value = replaceNoSlashTags(value, noSlashTags))
+  changeAttrMaps && (value = replaceAttrMaps(value, attrMaps))
+  changeSlashTags && (value = replaceSlashTags(value, slashTags))
   changeEmptyTags && (value = replaceEmptyTags(value, emptyTags))
+
+  styleAttrs && (value = replaceStyleAttrs(value))
+  styleTags && (value = replaceStyleTags(value, eraseStyleTags))
+  scriptTags && (value = replaceScriptTags(value, eraseScriptTags))
+  commentTags && (value = replaceCommentTags(value, eraseCommentTags))
 
   return value
 }

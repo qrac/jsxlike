@@ -1,25 +1,17 @@
 export type Options = {
-  changeMapAttrs?: boolean
-  changeStyleAttrs?: boolean
-  changeStyleTags?: boolean | "erase"
-  changeScriptTags?: boolean | "erase"
-  changeCommentTags?: boolean | "erase"
-  changeNoSlashTags?: boolean
-  changeEmptyTags?: boolean
-  mapAttrs?: { [attr: string]: string }
-  noSlashTags?: string[]
+  attrMaps?: { [attr: string]: string }
+  slashTags?: string[]
   emptyTags?: string[]
+  styleAttrs?: boolean
+  styleTags?: boolean | "erase"
+  scriptTags?: boolean | "erase"
+  commentTags?: boolean | "erase"
 }
 
-export const defaultOptions: Options = {
-  changeMapAttrs: true,
-  changeStyleAttrs: true,
-  changeStyleTags: true,
-  changeScriptTags: true,
-  changeCommentTags: true,
-  changeNoSlashTags: true,
-  changeEmptyTags: true,
-  mapAttrs: {
+export type ResolvedOptions = Required<Options>
+
+export const defaultOptions: ResolvedOptions = {
+  attrMaps: {
     class: "className",
     charset: "charSet",
     for: "htmlFor",
@@ -34,6 +26,10 @@ export const defaultOptions: Options = {
     frameborder: "frameBorder",
     "xlink:href": "href",
   },
-  noSlashTags: ["meta", "link", "input", "br"],
+  slashTags: ["meta", "link", "input", "br"],
   emptyTags: ["*"],
+  styleAttrs: true,
+  styleTags: true,
+  scriptTags: true,
+  commentTags: true,
 }

@@ -1,4 +1,4 @@
-export function replaceMapAttrs(
+export function replaceAttrMaps(
   input: string,
   attrMaps?: { [attr: string]: string }
 ) {
@@ -14,6 +14,38 @@ export function replaceMapAttrs(
     const reactAttr = item[1]
     const reg = new RegExp(`(<(?!!--)[^>]+)${htmlAttr}=`, "g")
     value = value.replace(reg, `$1${reactAttr}=`)
+    return
+  })
+  return value
+}
+
+export function replaceSlashTags(input: string, tagNames?: string[]) {
+  let value = input
+
+  if (!tagNames?.length) {
+    return value
+  }
+  tagNames.map((tagName) => {
+    const reg = new RegExp(`(<${tagName}[^>]*)>`, "g")
+    value = value.replace(reg, `$1 />`)
+    return
+  })
+  return value
+}
+
+export function replaceEmptyTags(input: string, tagNames?: string[]) {
+  let value = input
+
+  if (!tagNames?.length) {
+    return value
+  }
+  if (tagNames.includes("*")) {
+    const reg = new RegExp(`<(\\w+)([^>]*)>\\s*</\\1>`, "g")
+    return value.replace(reg, "<$1$2 />")
+  }
+  tagNames.map((tagName) => {
+    const reg = new RegExp(`(<${tagName}[^>]*)>\\s*</${tagName}>`, "g")
+    value = value.replace(reg, `$1 />`)
     return
   })
   return value
@@ -99,36 +131,4 @@ export function replaceCommentTags(input: string, erase?: boolean) {
     const reg = new RegExp(`<!--((?!-->)[\\s\\S]*?)-->`, "g")
     return value.replace(reg, `{/*$1*/}`)
   }
-}
-
-export function replaceNoSlashTags(input: string, tagNames?: string[]) {
-  let value = input
-
-  if (!tagNames?.length) {
-    return value
-  }
-  tagNames.map((tagName) => {
-    const reg = new RegExp(`(<${tagName}[^>]*)>`, "g")
-    value = value.replace(reg, `$1 />`)
-    return
-  })
-  return value
-}
-
-export function replaceEmptyTags(input: string, tagNames?: string[]) {
-  let value = input
-
-  if (!tagNames?.length) {
-    return value
-  }
-  if (tagNames.includes("*")) {
-    const reg = new RegExp(`<(\\w+)([^>]*)>\\s*</\\1>`, "g")
-    return value.replace(reg, "<$1$2 />")
-  }
-  tagNames.map((tagName) => {
-    const reg = new RegExp(`(<${tagName}[^>]*)>\\s*</${tagName}>`, "g")
-    value = value.replace(reg, `$1 />`)
-    return
-  })
-  return value
 }

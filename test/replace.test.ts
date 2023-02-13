@@ -1,24 +1,24 @@
 import { describe, expect, it } from "vitest"
 
 import {
-  replaceMapAttrs,
+  replaceAttrMaps,
+  replaceSlashTags,
+  replaceEmptyTags,
   replaceStyleName,
   replaceStyleAttrs,
   replaceStyleTags,
   replaceScriptTags,
   replaceCommentTags,
-  replaceNoSlashTags,
-  replaceEmptyTags,
 } from "../src/replace"
 
-describe("replaceMapAttrs", () => {
+describe("replaceAttrMaps", () => {
   it("Blank", () => {
-    const result = replaceMapAttrs(`<p>aa</p>`, {})
+    const result = replaceAttrMaps(`<p>aa</p>`, {})
     expect(result).toEqual(`<p>aa</p>`)
   })
 
   it("Replace", () => {
-    const result = replaceMapAttrs(`<p class="test" data-a="test">a</p>`, {
+    const result = replaceAttrMaps(`<p class="test" data-a="test">a</p>`, {
       class: "className",
       "data-a": "data-b",
     })
@@ -26,14 +26,14 @@ describe("replaceMapAttrs", () => {
   })
 
   it("Replace with comment", () => {
-    const result = replaceMapAttrs(`<p class="test">a</p><!-- class= -->`, {
+    const result = replaceAttrMaps(`<p class="test">a</p><!-- class= -->`, {
       class: "className",
     })
     expect(result).toEqual(`<p className="test">a</p><!-- class= -->`)
   })
 
   it("Replace with containing a newline", () => {
-    const result = replaceMapAttrs(
+    const result = replaceAttrMaps(
       `<p
   class="test"
   data-a="test"
@@ -47,6 +47,52 @@ describe("replaceMapAttrs", () => {
   className="test"
   data-b="test"
 >a</p>`)
+  })
+})
+
+describe("replaceSlashTags", () => {
+  it("Blank", () => {
+    const result = replaceSlashTags(`<meta name="viewport">`, [])
+    expect(result).toEqual(`<meta name="viewport">`)
+  })
+
+  it("Replace", () => {
+    const result = replaceSlashTags(`<meta name="viewport">`, ["meta"])
+    expect(result).toEqual(`<meta name="viewport" />`)
+  })
+})
+
+describe("replaceEmptyTags", () => {
+  it("Blank", () => {
+    const result = replaceEmptyTags(`<p class="a"></p><div></div><a></a>`, [])
+    expect(result).toEqual(`<p class="a"></p><div></div><a></a>`)
+  })
+
+  it("All", () => {
+    const result = replaceEmptyTags(`<p class="a"></p><div></div><a></a>`, [
+      "*",
+    ])
+    expect(result).toEqual(`<p class="a" /><div /><a />`)
+  })
+
+  it("All with containing a newline", () => {
+    const result = replaceEmptyTags(
+      `<p class="a">
+    </p>
+<div></div>
+<a>
+</a>`,
+      ["*"]
+    )
+    expect(result).toEqual(`<p class="a" />\n<div />\n<a />`)
+  })
+
+  it("Tags", () => {
+    const result = replaceEmptyTags(`<p class="a"></p><div></div><a></a>`, [
+      "p",
+      "a",
+    ])
+    expect(result).toEqual(`<p class="a" /><div></div><a />`)
   })
 })
 
@@ -171,51 +217,5 @@ aaa */}<p>b</p>{/* c */}`)
   it("Erase", () => {
     const result = replaceCommentTags(`<!-- a --><p>b</p><!-- c -->`, true)
     expect(result).toEqual(`<p>b</p>`)
-  })
-})
-
-describe("replaceNoSlashTags", () => {
-  it("Blank", () => {
-    const result = replaceNoSlashTags(`<meta name="viewport">`, [])
-    expect(result).toEqual(`<meta name="viewport">`)
-  })
-
-  it("Replace", () => {
-    const result = replaceNoSlashTags(`<meta name="viewport">`, ["meta"])
-    expect(result).toEqual(`<meta name="viewport" />`)
-  })
-})
-
-describe("replaceEmptyTags", () => {
-  it("Blank", () => {
-    const result = replaceEmptyTags(`<p class="a"></p><div></div><a></a>`, [])
-    expect(result).toEqual(`<p class="a"></p><div></div><a></a>`)
-  })
-
-  it("All", () => {
-    const result = replaceEmptyTags(`<p class="a"></p><div></div><a></a>`, [
-      "*",
-    ])
-    expect(result).toEqual(`<p class="a" /><div /><a />`)
-  })
-
-  it("All with containing a newline", () => {
-    const result = replaceEmptyTags(
-      `<p class="a">
-    </p>
-<div></div>
-<a>
-</a>`,
-      ["*"]
-    )
-    expect(result).toEqual(`<p class="a" />\n<div />\n<a />`)
-  })
-
-  it("Tags", () => {
-    const result = replaceEmptyTags(`<p class="a"></p><div></div><a></a>`, [
-      "p",
-      "a",
-    ])
-    expect(result).toEqual(`<p class="a" /><div></div><a />`)
   })
 })
