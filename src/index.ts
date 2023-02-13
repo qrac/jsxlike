@@ -1,7 +1,7 @@
 import type { Options } from "./options"
 import { defaultOptions } from "./options"
 import {
-  replaceAttrMaps,
+  replaceMapAttrs,
   replaceSlashTags,
   replaceStyleAttrs,
   replaceStyleTags,
@@ -13,7 +13,7 @@ import {
 function jsxlike(input: string, options?: Options) {
   const resolvedOptions = { ...defaultOptions, ...options }
   const {
-    attrMaps,
+    mapAttrs,
     slashTags,
     emptyTags,
     styleAttrs,
@@ -22,7 +22,7 @@ function jsxlike(input: string, options?: Options) {
     commentTags,
   } = resolvedOptions
 
-  const changeAttrMaps = Object.keys(attrMaps).length > 0
+  const changeMapAttrs = Object.keys(mapAttrs).length > 0
   const changeSlashTags = slashTags.length > 0
   const changeEmptyTags = emptyTags.length > 0
 
@@ -32,7 +32,7 @@ function jsxlike(input: string, options?: Options) {
 
   let value = input
 
-  changeAttrMaps && (value = replaceAttrMaps(value, attrMaps))
+  changeMapAttrs && (value = replaceMapAttrs(value, mapAttrs))
   changeSlashTags && (value = replaceSlashTags(value, slashTags))
   changeEmptyTags && (value = replaceEmptyTags(value, emptyTags))
 

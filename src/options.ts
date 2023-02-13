@@ -1,5 +1,5 @@
 export type Options = {
-  attrMaps?: { [attr: string]: string }
+  mapAttrs?: { [attr: string]: string }
   slashTags?: string[]
   emptyTags?: string[]
   styleAttrs?: boolean
@@ -11,7 +11,7 @@ export type Options = {
 export type ResolvedOptions = Required<Options>
 
 export const defaultOptions: ResolvedOptions = {
-  attrMaps: {
+  mapAttrs: {
     class: "className",
     charset: "charSet",
     for: "htmlFor",

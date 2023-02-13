@@ -1,4 +1,4 @@
-export function replaceAttrMaps(
+export function replaceMapAttrs(
   input: string,
   attrMaps?: { [attr: string]: string }
 ) {

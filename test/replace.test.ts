@@ -1,7 +1,7 @@
 import { describe, expect, it } from "vitest"
 
 import {
-  replaceAttrMaps,
+  replaceMapAttrs,
   replaceSlashTags,
   replaceEmptyTags,
   replaceStyleName,
@@ -11,14 +11,14 @@ import {
   replaceCommentTags,
 } from "../src/replace"
 
-describe("replaceAttrMaps", () => {
+describe("replaceMapAttrs", () => {
   it("Blank", () => {
-    const result = replaceAttrMaps(`<p>aa</p>`, {})
+    const result = replaceMapAttrs(`<p>aa</p>`, {})
     expect(result).toEqual(`<p>aa</p>`)
   })
 
   it("Replace", () => {
-    const result = replaceAttrMaps(`<p class="test" data-a="test">a</p>`, {
+    const result = replaceMapAttrs(`<p class="test" data-a="test">a</p>`, {
       class: "className",
       "data-a": "data-b",
     })
@@ -26,14 +26,14 @@ describe("replaceAttrMaps", () => {
   })
 
   it("Replace with comment", () => {
-    const result = replaceAttrMaps(`<p class="test">a</p><!-- class= -->`, {
+    const result = replaceMapAttrs(`<p class="test">a</p><!-- class= -->`, {
       class: "className",
     })
     expect(result).toEqual(`<p className="test">a</p><!-- class= -->`)
   })
 
   it("Replace with containing a newline", () => {
-    const result = replaceAttrMaps(
+    const result = replaceMapAttrs(
       `<p
   class="test"
   data-a="test"
