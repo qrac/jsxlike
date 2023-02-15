@@ -1,19 +1,22 @@
 import { defineConfig } from "vite"
 import react from "@vitejs/plugin-react"
+import svgr from "vite-plugin-svgr"
+
+const preactAlias = [
+  {
+    find: "react",
+    replacement: "preact/compat",
+  },
+  {
+    find: "react-dom",
+    replacement: "preact/compat",
+  },
+]
 
 export default defineConfig({
-  plugins: [react()],
+  plugins: [react(), svgr()],
   resolve: {
-    alias: [
-      {
-        find: "react",
-        replacement: "preact/compat",
-      },
-      {
-        find: "react-dom",
-        replacement: "preact/compat",
-      },
-    ],
+    alias: process.env.NODE_ENV === "production" ? preactAlias : [],
   },
   build: {
     rollupOptions: {

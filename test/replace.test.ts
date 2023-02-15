@@ -1,59 +1,37 @@
 import { describe, expect, it } from "vitest"
 
 import {
-  replaceEmptyTags,
-  replaceSlashTags,
+  replaceExtractTags,
   replaceMapAttrs,
   replaceStyleName,
   replaceStyleAttrs,
   replaceStyleTags,
   replaceScriptTags,
   replaceCommentTags,
+  replaceSlashTags,
+  replaceEmptyTags,
+  replaceAbsolutePath,
 } from "../src/replace"
 
-describe("replaceEmptyTags", () => {
+describe("replaceExtractTags", () => {
   it("Blank", () => {
-    const result = replaceEmptyTags(`<p class="a"></p><div></div><a></a>`, [])
-    expect(result).toEqual(`<p class="a"></p><div></div><a></a>`)
+    const result = replaceExtractTags(`<p class="a"></p><div></div>`, [])
+    expect(result).toEqual(`<p class="a"></p><div></div>`)
   })
 
-  it("All", () => {
-    const result = replaceEmptyTags(`<p class="a"></p><div></div><a></a>`, [
-      "*",
-    ])
-    expect(result).toEqual(`<p class="a" /><div /><a />`)
+  it("Extract one", () => {
+    const result = replaceExtractTags(`<p class="a"></p><div></div>`, ["p"])
+    expect(result).toEqual(`<p class="a"></p>`)
   })
 
-  it("All with containing a newline", () => {
-    const result = replaceEmptyTags(
-      `<p class="a">
-    </p>
-<div></div>
-<a>
-</a>`,
-      ["*"]
+  it("Extract no slash and slash", () => {
+    const result = replaceExtractTags(
+      `<meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><p class="a"></p><div></div><p></p>`,
+      ["meta", "div"]
     )
-    expect(result).toEqual(`<p class="a" />\n<div />\n<a />`)
-  })
-
-  it("Tags", () => {
-    const result = replaceEmptyTags(`<p class="a"></p><div></div><a></a>`, [
-      "p",
-      "a",
-    ])
-    expect(result).toEqual(`<p class="a" /><div></div><a />`)
-  })
-})
-
-describe("replaceSlashTags", () => {
-  it("Blank", () => {
-    const result = replaceSlashTags(`<meta name="viewport">`, [])
-    expect(result).toEqual(`<meta name="viewport">`)
-  })
-
-  it("Replace", () => {
-    const result = replaceSlashTags(`<meta name="viewport">`, ["meta"])
-    expect(result).toEqual(`<meta name="viewport" />`)
+    expect(result).toEqual(
+      `<meta charset="UTF-8">\n<meta name="viewport" content="width=device-width, initial-scale=1.0">\n<div></div>`
+    )
   })
 })
 
@@ -79,20 +57,11 @@ describe("replaceMapAttrs", () => {
   })
 
   it("Replace with containing a newline", () => {
-    const result = replaceMapAttrs(
-      `<p
-  class="test"
-  data-a="test"
->a</p>`,
-      {
-        class: "className",
-        "data-a": "data-b",
-      }
-    )
-    expect(result).toEqual(`<p
-  className="test"
-  data-b="test"
->a</p>`)
+    const result = replaceMapAttrs(`<p \nclass="test"\ndata-a="test"\n>a</p>`, {
+      class: "className",
+      "data-a": "data-b",
+    })
+    expect(result).toEqual(`<p \nclassName="test"\ndata-b="test"\n>a</p>`)
   })
 })
 
@@ -155,14 +124,10 @@ describe("replaceStyleTags", () => {
 
   it("Containing a newline", () => {
     const result = replaceStyleTags(
-      `<style>
-  .test > a {
-    display: block;
-  }
-</style>`
+      `<style>\n.test > a {\ndisplay: block;\n}\n</style>`
     )
     expect(result).toEqual(
-      `<style dangerouslySetInnerHTML={{ __html: \`\n  .test > a {\n    display: block;\n  }\n\` }} />`
+      `<style dangerouslySetInnerHTML={{ __html: \`\n.test > a {\ndisplay: block;\n}\n\` }} />`
     )
   })
 
@@ -184,11 +149,9 @@ describe("replaceScriptTags", () => {
   })
 
   it("Containing a newline", () => {
-    const result = replaceScriptTags(`<script>
-  console.log("test")
-</script>`)
+    const result = replaceScriptTags(`<script>\nconsole.log("test")\n</script>`)
     expect(result).toEqual(
-      `<script dangerouslySetInnerHTML={{ __html: \`\n  console.log(\"test\")\n\` }} />`
+      `<script dangerouslySetInnerHTML={{ __html: \`\nconsole.log(\"test\")\n\` }} />`
     )
   })
 
@@ -208,14 +171,70 @@ describe("replaceCommentTags", () => {
   })
 
   it("Containing a newline", () => {
-    const result = replaceCommentTags(`<!-- aaa
-aaa --><p>b</p><!-- c -->`)
-    expect(result).toEqual(`{/* aaa
-aaa */}<p>b</p>{/* c */}`)
+    const result = replaceCommentTags(`<!-- aaa\naaa --><p>b</p><!-- c -->`)
+    expect(result).toEqual(`{/* aaa\naaa */}<p>b</p>{/* c */}`)
   })
 
   it("Erase", () => {
     const result = replaceCommentTags(`<!-- a --><p>b</p><!-- c -->`, true)
     expect(result).toEqual(`<p>b</p>`)
+  })
+})
+
+describe("replaceSlashTags", () => {
+  it("Blank", () => {
+    const result = replaceSlashTags(`<meta name="viewport">`, [])
+    expect(result).toEqual(`<meta name="viewport">`)
+  })
+
+  it("Replace", () => {
+    const result = replaceSlashTags(`<meta name="viewport">`, ["meta"])
+    expect(result).toEqual(`<meta name="viewport" />`)
+  })
+})
+
+describe("replaceEmptyTags", () => {
+  it("Blank", () => {
+    const result = replaceEmptyTags(`<p class="a"></p><div></div><a></a>`, [])
+    expect(result).toEqual(`<p class="a"></p><div></div><a></a>`)
+  })
+
+  it("All", () => {
+    const result = replaceEmptyTags(`<p class="a"></p><div></div><a></a>`, [
+      "*",
+    ])
+    expect(result).toEqual(`<p class="a" /><div /><a />`)
+  })
+
+  it("All with containing a newline", () => {
+    const result = replaceEmptyTags(
+      `<p class="a">\n</p>\n<div>\n</div>\n<a>\n</a>`,
+      ["*"]
+    )
+    expect(result).toEqual(`<p class="a" />\n<div />\n<a />`)
+  })
+
+  it("Tags", () => {
+    const result = replaceEmptyTags(`<p class="a"></p><div></div><a></a>`, [
+      "p",
+      "a",
+    ])
+    expect(result).toEqual(`<p class="a" /><div></div><a />`)
+  })
+})
+
+describe("replaceAbsolutePath", () => {
+  it("Blank", () => {
+    const result = replaceAbsolutePath(`<link href="/style.css">`)
+    expect(result).toEqual(`<link href="/style.css">`)
+  })
+
+  it("Active", () => {
+    const result = replaceAbsolutePath(
+      `<link href="/style.css">`,
+      "https://example.com",
+      { link: ["href"] }
+    )
+    expect(result).toEqual(`<link href="https://example.com/style.css">`)
   })
 })

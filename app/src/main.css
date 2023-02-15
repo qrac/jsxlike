@@ -22,6 +22,10 @@
   --theme-ac-5: #c59cf4;
 }
 
+:root {
+  color-scheme: dark;
+}
+
 *,
 :before,
 :after {

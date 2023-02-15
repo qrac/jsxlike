@@ -5,23 +5,10 @@ export default function () {
         <meta charSet="UTF-8" />
         <meta name="viewport" content="width=device-width, initial-scale=1.0" />
         <title>jsxlike</title>
-        <link rel="stylesheet" href="/assets/bundle.css" />
-        <style
-          dangerouslySetInnerHTML={{
-            __html: `
-      .header > .title {
-        color: red;
-      }
-    `,
-          }}
-        />
-        <script
-          dangerouslySetInnerHTML={{
-            __html: `
-      console.log("test")
-    `,
-          }}
-        />
+        <link rel="stylesheet" href="/assets/reset.css" />
+        <link rel="stylesheet" href="/assets/base.css" />
+        <link rel="stylesheet" href="/assets/parts.css" />
+        <style dangerouslySetInnerHTML={{ __html: `.title { color: red; }` }} />
       </head>
       <body>
         {/* + Header */}
@@ -35,10 +22,12 @@ export default function () {
         </header>
         {/* - Header */}
         <main className="main">
-          {/* main content
-      input checkbox! */}
+          <img src="/assets/images/thumb.png" width="80" height="80" alt="" />
           <input type="checkbox" checked />
         </main>
+        <script src="/assets/common.js" />
+        <script src="/assets/animations.js" />
+        <script dangerouslySetInnerHTML={{ __html: `console.log("test")` }} />
       </body>
     </html>
   )

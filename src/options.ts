@@ -1,18 +1,20 @@
 export type Options = {
-  emptyTags?: string[]
-  slashTags?: string[]
+  extractTags?: string[]
   mapAttrs?: { [attr: string]: string }
   styleAttrs?: boolean
   styleTags?: boolean | "erase"
   scriptTags?: boolean | "erase"
   commentTags?: boolean | "erase"
+  slashTags?: string[]
+  emptyTags?: string[]
+  absolutePath?: string
+  absoluteAttrs?: { [tagName: string]: string[] }
 }
 
 export type ResolvedOptions = Required<Options>
 
 export const defaultOptions: ResolvedOptions = {
-  emptyTags: ["*"],
-  slashTags: ["meta", "link", "input", "br"],
+  extractTags: [],
   mapAttrs: {
     class: "className",
     charset: "charSet",
@@ -32,4 +34,13 @@ export const defaultOptions: ResolvedOptions = {
   styleTags: true,
   scriptTags: true,
   commentTags: true,
+  slashTags: ["meta", "link", "img", "input", "br", "hr"],
+  emptyTags: ["*"],
+  absolutePath: "",
+  absoluteAttrs: {
+    link: ["href"],
+    script: ["src"],
+    img: ["src"],
+    use: ["xlink:href", "href"],
+  },
 }

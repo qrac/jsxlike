@@ -1,42 +1,35 @@
-export function replaceEmptyTags(input: string, tagNames?: string[]) {
+export function replaceExtractTags(input: string, tagNames?: string[]) {
   let value = input
-
-  if (!tagNames?.length) {
-    return value
-  }
-  if (tagNames.includes("*")) {
-    const reg = new RegExp(`<(\\w+)([^>]*)>\\s*</\\1>`, "g")
-    return value.replace(reg, "<$1$2 />")
-  }
-  tagNames.map((tagName) => {
-    const reg = new RegExp(`(<${tagName}[^>]*)>\\s*</${tagName}>`, "g")
-    value = value.replace(reg, `$1 />`)
-    return
-  })
-  return value
-}
-
-export function replaceSlashTags(input: string, tagNames?: string[]) {
-  let value = input
+  let values: string[] = []
 
   if (!tagNames?.length) {
     return value
   }
   tagNames.map((tagName) => {
-    const reg = new RegExp(`(<${tagName}[^>]*)>`, "g")
-    value = value.replace(reg, `$1 />`)
+    const noSlashTags = ["meta", "link", "input", "img", "br", "hr"]
+    const reg = noSlashTags.includes(tagName)
+      ? new RegExp(`<${tagName}[^>]*>`, "g")
+      : new RegExp(`<${tagName}(?!</${tagName}>)[\\s\\S]*?</${tagName}>`, "g")
+    const matchValues = value.match(reg)
+
+    if (matchValues && matchValues.length > 0) {
+      matchValues.map((matchValue) => {
+        values.push(matchValue)
+        return
+      })
+    }
     return
   })
-  return value
+  return values.length > 0 ? values.join("\n") : ""
 }
 
 export function replaceMapAttrs(
   input: string,
-  attrMaps?: { [attr: string]: string }
+  attrs?: { [attr: string]: string }
 ) {
   let value = input
 
-  const attrItems = Object.entries(attrMaps || {})
+  const attrItems = Object.entries(attrs || {})
 
   if (!attrItems.length) {
     return value
@@ -131,4 +124,73 @@ export function replaceCommentTags(input: string, erase?: boolean) {
     const reg = new RegExp(`<!--((?!-->)[\\s\\S]*?)-->`, "g")
     return value.replace(reg, `{/*$1*/}`)
   }
+}
+
+export function replaceSlashTags(input: string, tagNames?: string[]) {
+  let value = input
+
+  if (!tagNames?.length) {
+    return value
+  }
+  tagNames.map((tagName) => {
+    const reg = new RegExp(`(<${tagName}[^>]*)>`, "g")
+    value = value.replace(reg, `$1 />`)
+    return
+  })
+  return value
+}
+
+export function replaceEmptyTags(input: string, tagNames?: string[]) {
+  let value = input
+
+  if (!tagNames?.length) {
+    return value
+  }
+  if (tagNames.includes("*")) {
+    const reg = new RegExp(`<(\\w+)([^>]*)>\\s*</\\1>`, "g")
+    return value.replace(reg, "<$1$2 />")
+  }
+  tagNames.map((tagName) => {
+    const reg = new RegExp(`(<${tagName}[^>]*)>\\s*</${tagName}>`, "g")
+    value = value.replace(reg, `$1 />`)
+    return
+  })
+  return value
+}
+
+export function replaceAbsolutePath(
+  input: string,
+  url?: string,
+  attrs?: { [tagName: string]: string[] }
+) {
+  let value = input
+
+  const attrItems = Object.entries(attrs || {})
+
+  if (!url || !attrItems.length) {
+    return value
+  }
+  attrItems.map((item) => {
+    const tagName = item[0]
+    const attrs = item[1]
+
+    if (!attrs.length) {
+      return
+    }
+    attrs.map((attr) => {
+      const reg = new RegExp(`(<${tagName}[^>]+${attr}=["|'])(.*?)(["|'])`, "g")
+      value = value.replace(
+        reg,
+        (_, before: string, filePath: string, close: string) => {
+          if (!filePath.startsWith("/")) {
+            return value
+          }
+          return `${before}${url}${filePath}${close}`
+        }
+      )
+      return
+    })
+    return
+  })
+  return value
 }
