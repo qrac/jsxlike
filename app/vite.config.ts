@@ -14,7 +14,7 @@ const preactAlias = [
 ]
 
 export default defineConfig({
-  base: "./",
+  //base: "./",
   plugins: [react(), svgr()],
   resolve: {
     alias: process.env.NODE_ENV === "production" ? preactAlias : [],
