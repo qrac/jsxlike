@@ -1,3 +1,5 @@
+import { voidTags } from "./options"
+
 export function replaceExtractTags(input: string, tagNames?: string[]) {
   let value = input
   let values: string[] = []
@@ -6,8 +8,7 @@ export function replaceExtractTags(input: string, tagNames?: string[]) {
     return value
   }
   tagNames.map((tagName) => {
-    const noSlashTags = ["meta", "link", "input", "img", "br", "hr"]
-    const reg = noSlashTags.includes(tagName)
+    const reg = voidTags.includes(tagName)
       ? new RegExp(`<${tagName}[^>]*>`, "g")
       : new RegExp(`<${tagName}(?!</${tagName}>)[\\s\\S]*?</${tagName}>`, "g")
     const matchValues = value.match(reg)
@@ -126,7 +127,7 @@ export function replaceCommentTags(input: string, erase?: boolean) {
   }
 }
 
-export function replaceSlashTags(input: string, tagNames?: string[]) {
+export function replaceVoidTags(input: string, tagNames?: string[]) {
   let value = input
 
   if (!tagNames?.length) {
@@ -140,7 +141,7 @@ export function replaceSlashTags(input: string, tagNames?: string[]) {
   return value
 }
 
-export function replaceEmptyTags(input: string, tagNames?: string[]) {
+export function replaceShortTags(input: string, tagNames?: string[]) {
   let value = input
 
   if (!tagNames?.length) {

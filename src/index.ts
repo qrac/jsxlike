@@ -7,8 +7,8 @@ import {
   replaceStyleTags,
   replaceScriptTags,
   replaceCommentTags,
-  replaceSlashTags,
-  replaceEmptyTags,
+  replaceVoidTags,
+  replaceShortTags,
   replaceAbsolutePath,
 } from "./replace"
 
@@ -21,8 +21,8 @@ function jsxlike(input: string, options?: Options) {
     styleTags,
     scriptTags,
     commentTags,
-    slashTags,
-    emptyTags,
+    voidTags,
+    shortTags,
     absolutePath,
     absoluteAttrs,
   } = resolvedOptions
@@ -32,8 +32,8 @@ function jsxlike(input: string, options?: Options) {
   const eraseStyleTags = styleTags === "erase"
   const eraseScriptTags = scriptTags === "erase"
   const eraseCommentTags = commentTags === "erase"
-  const hasSlashTags = slashTags.length > 0
-  const hasEmptyTags = emptyTags.length > 0
+  const hasVoidTags = voidTags.length > 0
+  const hasShortTags = shortTags.length > 0
   const abPath = absolutePath
   const abAttrs = absoluteAttrs
   const hasAbsolute = abPath && Object.keys(abAttrs).length > 0
@@ -46,8 +46,8 @@ function jsxlike(input: string, options?: Options) {
   styleTags && (value = replaceStyleTags(value, eraseStyleTags))
   scriptTags && (value = replaceScriptTags(value, eraseScriptTags))
   commentTags && (value = replaceCommentTags(value, eraseCommentTags))
-  hasSlashTags && (value = replaceSlashTags(value, slashTags))
-  hasEmptyTags && (value = replaceEmptyTags(value, emptyTags))
+  hasVoidTags && (value = replaceVoidTags(value, voidTags))
+  hasShortTags && (value = replaceShortTags(value, shortTags))
   hasAbsolute && (value = replaceAbsolutePath(value, abPath, abAttrs))
 
   return value

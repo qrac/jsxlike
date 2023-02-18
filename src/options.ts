@@ -5,13 +5,15 @@ export type Options = {
   styleTags?: boolean | "erase"
   scriptTags?: boolean | "erase"
   commentTags?: boolean | "erase"
-  slashTags?: string[]
-  emptyTags?: string[]
+  voidTags?: string[]
+  shortTags?: string[]
   absolutePath?: string
   absoluteAttrs?: { [tagName: string]: string[] }
 }
 
 export type ResolvedOptions = Required<Options>
+
+export const voidTags = ["meta", "link", "img", "input", "br", "wbr", "hr"]
 
 const defaultOptions: Required<Options> = {
   extractTags: [],
@@ -34,8 +36,8 @@ const defaultOptions: Required<Options> = {
   styleTags: true,
   scriptTags: true,
   commentTags: true,
-  slashTags: ["meta", "link", "img", "input", "br", "hr"],
-  emptyTags: ["*"],
+  voidTags,
+  shortTags: ["*"],
   absolutePath: "",
   absoluteAttrs: {
     link: ["href"],

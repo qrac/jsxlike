@@ -13,10 +13,10 @@ import "./app.css"
 type AppOptions = {
   extractTags: string
   absolutePath: string
-  shortEmptyTags: boolean
+  activeShortTags: boolean
   eraseCommentTags: boolean
 }
-type AppOptionBooleans = "shortEmptyTags" | "eraseCommentTags"
+type AppOptionBooleans = "activeShortTags" | "eraseCommentTags"
 
 const extractTagLabels = [
   { value: "*", text: "すべて" },
@@ -31,14 +31,14 @@ const otherCheckboxes: {
   name: AppOptionBooleans
   text: string
 }[] = [
-  { name: "shortEmptyTags", text: "空タグを省略" },
+  { name: "activeShortTags", text: "閉じタグを省略" },
   { name: "eraseCommentTags", text: "コメントを削除" },
 ]
 
 function htmlToJsx(value: string, appOptions: AppOptions) {
   const options: Options = {
     extractTags: appOptions.extractTags === "*" ? [] : [appOptions.extractTags],
-    emptyTags: appOptions.shortEmptyTags ? ["*"] : [],
+    shortTags: appOptions.activeShortTags ? ["*"] : [],
     commentTags: appOptions.eraseCommentTags ? "erase" : true,
     absolutePath: appOptions.absolutePath,
   }
@@ -55,7 +55,7 @@ export default function App() {
   const defaultAppOptions: AppOptions = {
     extractTags: "*",
     absolutePath: "",
-    shortEmptyTags: true,
+    activeShortTags: true,
     eraseCommentTags: false,
   }
   const defaultHtmlStr = defaultHtml.replace(/^<!-- prettier-ignore -->\n/, "")

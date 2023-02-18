@@ -8,8 +8,8 @@ import {
   replaceStyleTags,
   replaceScriptTags,
   replaceCommentTags,
-  replaceSlashTags,
-  replaceEmptyTags,
+  replaceVoidTags,
+  replaceShortTags,
   replaceAbsolutePath,
 } from "../src/replace"
 
@@ -181,33 +181,33 @@ describe("replaceCommentTags", () => {
   })
 })
 
-describe("replaceSlashTags", () => {
+describe("replaceVoidTags", () => {
   it("Blank", () => {
-    const result = replaceSlashTags(`<meta name="viewport">`, [])
+    const result = replaceVoidTags(`<meta name="viewport">`, [])
     expect(result).toEqual(`<meta name="viewport">`)
   })
 
   it("Replace", () => {
-    const result = replaceSlashTags(`<meta name="viewport">`, ["meta"])
+    const result = replaceVoidTags(`<meta name="viewport">`, ["meta"])
     expect(result).toEqual(`<meta name="viewport" />`)
   })
 })
 
-describe("replaceEmptyTags", () => {
+describe("replaceShortTags", () => {
   it("Blank", () => {
-    const result = replaceEmptyTags(`<p class="a"></p><div></div><a></a>`, [])
+    const result = replaceShortTags(`<p class="a"></p><div></div><a></a>`, [])
     expect(result).toEqual(`<p class="a"></p><div></div><a></a>`)
   })
 
   it("All", () => {
-    const result = replaceEmptyTags(`<p class="a"></p><div></div><a></a>`, [
+    const result = replaceShortTags(`<p class="a"></p><div></div><a></a>`, [
       "*",
     ])
     expect(result).toEqual(`<p class="a" /><div /><a />`)
   })
 
   it("All with containing a newline", () => {
-    const result = replaceEmptyTags(
+    const result = replaceShortTags(
       `<p class="a">\n</p>\n<div>\n</div>\n<a>\n</a>`,
       ["*"]
     )
@@ -215,7 +215,7 @@ describe("replaceEmptyTags", () => {
   })
 
   it("Tags", () => {
-    const result = replaceEmptyTags(`<p class="a"></p><div></div><a></a>`, [
+    const result = replaceShortTags(`<p class="a"></p><div></div><a></a>`, [
       "p",
       "a",
     ])
