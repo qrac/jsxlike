@@ -1,5 +1,21 @@
 # jsxlike
 
+<p>
+  <a aria-label="Made by QRANOKO" href="https://qranoko.jp">
+    <img src="https://img.shields.io/badge/MADE%20BY%20QRANOKO-212121.svg?style=for-the-badge&labelColor=212121">
+  </a>
+  <a aria-label="NPM version" href="https://www.npmjs.com/package/jsxlike">
+    <img alt="" src="https://img.shields.io/npm/v/jsxlike.svg?style=for-the-badge&labelColor=212121">
+  </a>
+  <a aria-label="License" href="https://github.com/qrac/jsxlike/blob/main/LICENSE">
+    <img alt="" src="https://img.shields.io/npm/l/jsxlike.svg?style=for-the-badge&labelColor=212121">
+  </a>
+</p>
+
+## Web Tool
+
+- https://jsxlike.qranoko.jp
+
 ## About
 
 HTML 文字列を React の JSX で使える構文におおよそ変換します。
