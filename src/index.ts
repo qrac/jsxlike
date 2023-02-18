@@ -1,5 +1,5 @@
 import type { Options } from "./options"
-import { defaultOptions } from "./options"
+import { resolveOptions } from "./options"
 import {
   replaceExtractTags,
   replaceMapAttrs,
@@ -13,7 +13,7 @@ import {
 } from "./replace"
 
 function jsxlike(input: string, options?: Options) {
-  const resolvedOptions = { ...defaultOptions, ...options }
+  const resolvedOptions = resolveOptions(options || {})
   const {
     extractTags,
     mapAttrs,
@@ -53,4 +53,5 @@ function jsxlike(input: string, options?: Options) {
   return value
 }
 
+//export { defaultOptions } from "./options"
 export default jsxlike

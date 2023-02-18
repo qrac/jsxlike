@@ -13,7 +13,7 @@ export type Options = {
 
 export type ResolvedOptions = Required<Options>
 
-export const defaultOptions: ResolvedOptions = {
+const defaultOptions: Required<Options> = {
   extractTags: [],
   mapAttrs: {
     class: "className",
@@ -43,4 +43,21 @@ export const defaultOptions: ResolvedOptions = {
     img: ["src"],
     use: ["xlink:href", "href"],
   },
+}
+
+export function resolveOptions(options: Options): ResolvedOptions {
+  let opts = { ...defaultOptions, ...options }
+
+  opts = {
+    ...opts,
+    mapAttrs: {
+      ...defaultOptions.mapAttrs,
+      ...(options.mapAttrs || {}),
+    },
+    absoluteAttrs: {
+      ...defaultOptions.absoluteAttrs,
+      ...(options.absoluteAttrs || {}),
+    },
+  }
+  return opts
 }
