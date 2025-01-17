@@ -1,65 +1,40 @@
 {
   "name": "jsxlike",
-  "description": "Converting HTML to React JSX-like syntax",
-  "version": "0.1.0",
-  "browser": "dist/jsxlike.js",
-  "module": "dist/jsxlike.esm.js",
-  "types": "dist/types/index.d.ts",
-  "files": [
-    "dist"
-  ],
+  "private": true,
+  "version": "1.0.0",
+  "type": "module",
   "license": "MIT",
-  "homepage": "https://github.com/qrac/jsxlike",
   "repository": {
     "type": "git",
     "url": "https://github.com/qrac/jsxlike"
   },
-  "bugs": {
-    "url": "https://github.com/qrac/jsxlike/issues"
-  },
-  "keywords": [
-    "jsx",
-    "react",
-    "html2jsx",
-    "htmltojsx",
-    "browser",
-    "javascript",
-    "typescript",
-    "japanese",
-    "jsxlike"
-  ],
-  "author": {
-    "name": "Qrac",
-    "url": "https://qrac.jp"
-  },
-  "organization": {
-    "name": "QRANOKO",
-    "url": "https://qranoko.jp"
-  },
   "scripts": {
-    "build": "npm run clean && npm run build:src & npm run build:type",
-    "build:src": "vite build",
-    "build:type": "tsc",
-    "app": "vite ./app -c=./app/vite.config.ts",
-    "app-build": "vite build ./app -c=./app/vite.config.ts",
-    "app-preview": "vite preview ./app -c=./app/vite.config.ts",
+    "dev": "vite",
+    "dev:h": "vite --host",
+    "build": "vite build",
+    "preview": "vite preview",
+    "preview:h": "vite preview --host",
     "test": "vitest run",
     "test:w": "vitest watch",
     "clean": "rimraf ./dist",
-    "prepublishOnly": "npm run clean && npm run build"
+    "up": "npx npm-check-updates",
+    "up:u": "npx npm-check-updates -u"
+  },
+  "dependencies": {
+    "js-beautify": "^1.15.1",
+    "musubii": "^8.6.0",
+    "preact": "^10.25.4"
   },
   "devDependencies": {
-    "@types/js-beautify": "^1.13.3",
-    "@types/react": "^18.0.27",
-    "@types/react-dom": "^18.0.10",
-    "@vitejs/plugin-react": "^3.1.0",
-    "js-beautify": "^1.14.7",
-    "preact": "^10.12.0",
-    "react": "^18.2.0",
-    "react-dom": "^18.2.0",
-    "typescript": "^4.9.5",
-    "vite": "^4.1.1",
-    "vite-plugin-svgr": "^2.4.0",
-    "vitest": "^0.28.4"
+    "@types/js-beautify": "^1.14.3",
+    "@types/node": "^22.10.5",
+    "@types/react": "^19.0.6",
+    "@types/react-dom": "^19.0.3",
+    "@vitejs/plugin-react": "^4.3.4",
+    "react": "^19.0.0",
+    "react-dom": "^19.0.0",
+    "typescript": "^5.7.3",
+    "vite": "^5.4.11",
+    "vitest": "^2.1.8"
   }
 }
