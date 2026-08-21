@@ -3,6 +3,13 @@ import { describe, expect, it } from "vitest"
 import { htmlToJsx } from "../src/core"
 
 describe("htmlToJsx", () => {
+  it("outputs a component by default", async () => {
+    const result = await htmlToJsx(`<main>Hello</main>`)
+
+    expect(result.code).toContain("export default function Component()")
+    expect(result.code).toContain("<main>Hello</main>")
+  })
+
   it("converts common React attributes and void elements", async () => {
     const result = await htmlToJsx(
       `<label for="name" class="field"><img src="/a.jpg" alt="A"><input id="name" readonly></label>`,

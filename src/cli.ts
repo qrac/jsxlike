@@ -12,7 +12,7 @@ cli
   .command("[input]", "Convert HTML from a file or stdin into React JSX")
   .option("-o, --output <file>", "Write JSX to a file instead of stdout")
   .option("--mode <mode>", "Output mode: fragment or component", {
-    default: "fragment",
+    default: "component",
   })
   .option("--name <name>", "Component name used with --mode component", {
     default: "Component",

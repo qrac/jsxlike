@@ -26,17 +26,19 @@ cat input.html | npx jsxlike
 npx jsxlike input.html -o Component.jsx
 ```
 
-React Componentとして出力する場合：
+デフォルトではReact Componentとして出力します。コンポーネント名を指定する場合：
 
 ```bash
-npx jsxlike input.html --mode component --name Hero
+npx jsxlike input.html --name Hero
 ```
+
+JSX Fragmentとして出力する場合は `--mode fragment` を指定します。
 
 ### Options
 
 ```text
 -o, --output <file>    output file
---mode <mode>          fragment | component
+--mode <mode>          fragment | component (default: component)
 --name <name>          component name
 --indent <size>        indentation size
 --collapse-empty       collapse empty non-void elements
@@ -54,10 +56,11 @@ console.log(result.warnings)
 ```
 
 `htmlToJsx()` は `{ code, warnings }` を返します。
+`mode` のデフォルトは `"component"` です。
 
 ```ts
 await htmlToJsx(html, {
-  mode: "fragment",
+  mode: "component",
   componentName: "Component",
   indentSize: 2,
   collapseEmptyElements: false,
