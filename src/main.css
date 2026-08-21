@@ -1,4 +1,69 @@
-@import "musubii/src/bases/theme/dark-default.css";
-@import "musubii/src/bases/typo/font.css";
-@import "musubii/src/bases/base/reset.css";
-@import "musubii/src/bases/base/html.css";
+* {
+  box-sizing: border-box;
+}
+
+:root {
+  color-scheme: dark;
+  --theme-bg-1: #0f172a;
+  --theme-bg-2: #111827;
+  --theme-tx-1: #f8fafc;
+  --theme-tx-2: #e2e8f0;
+  --theme-tx-3: #94a3b8;
+  --theme-tx-4: #475569;
+  --theme-secondary: #38bdf8;
+  --font-sans-en: ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  --font-mono: "SFMono-Regular", Consolas, "Liberation Mono", Menlo, monospace;
+  font-family: var(--font-sans-en);
+  background: var(--theme-bg-1);
+  color: var(--theme-tx-2);
+  font-synthesis: none;
+  text-rendering: optimizeLegibility;
+}
+
+html,
+body,
+#root {
+  width: 100%;
+  min-width: 0;
+  height: 100%;
+  margin: 0;
+}
+
+body {
+  min-width: 320px;
+  background: var(--theme-bg-1);
+}
+
+button,
+input,
+select,
+textarea {
+  color: inherit;
+  font: inherit;
+}
+
+button,
+input,
+select,
+textarea,
+summary {
+  accent-color: var(--theme-secondary);
+}
+
+select,
+input,
+textarea {
+  border-color: var(--theme-tx-4);
+}
+
+a {
+  color: inherit;
+  text-decoration: none;
+}
+
+h1,
+h2,
+p,
+pre {
+  margin: 0;
+}
