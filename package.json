@@ -38,7 +38,9 @@
     "preview:h": "vite preview --host",
     "test": "vitest run",
     "test:w": "vitest",
-    "check": "npm run test && npm run build"
+    "check": "npm run test && npm run build",
+    "up": "npx npm-check-updates --deep --cooldown 1",
+    "up:u": "npx npm-check-updates --deep --cooldown 1 -u"
   },
   "dependencies": {
     "cac": "^7.0.0",
@@ -54,7 +56,7 @@
     "react": "^19.2.8",
     "react-dom": "^19.2.8",
     "typescript": "^7.0.2",
-    "vite": "^8.2.1",
+    "vite": "^8.2.2",
     "vitest": "^4.1.11"
   }
 }
