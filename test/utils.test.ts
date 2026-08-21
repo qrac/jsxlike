@@ -34,6 +34,17 @@ describe("htmlToJsx", () => {
     expect(result.code).toContain('aria-label="Open"')
   })
 
+  it("escapes JSX-sensitive text after HTML entity decoding", async () => {
+    const result = await htmlToJsx(
+      `<li>requires react &gt;= 16.9 &amp;&amp; value &lt; 20 {draft}</li>`,
+    )
+
+    expect(result.code).toContain("react &gt;= 16.9")
+    expect(result.code).toContain("&amp;&amp;")
+    expect(result.code).toContain("value &lt; 20")
+    expect(result.code).toContain("&#123;draft&#125;")
+  })
+
   it("omits string event handlers with a warning", async () => {
     const result = await htmlToJsx(`<button onclick="alert(1)">Open</button>`)
 
