@@ -5,7 +5,6 @@ import process from "node:process"
 import { cac } from "cac"
 
 import { htmlToJsx, type OutputMode } from "./core.js"
-import { version } from "../package.json" with { type: "json" }
 
 const cli = cac("jsxlike")
 
@@ -43,7 +42,7 @@ cli
   })
 
 cli.help()
-cli.version(version)
+cli.version("2.0.0")
 cli.parse()
 
 async function readStdin() {
