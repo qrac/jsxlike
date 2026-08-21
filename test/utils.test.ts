@@ -1,122 +1,84 @@
 import { describe, expect, it } from "vitest"
 
-import {
-  replaceAttrNames,
-  replaceStyleAttrs,
-  replaceStyleTags,
-  replaceScriptTags,
-  replaceCommentTags,
-  replaceSingleTags,
-  replaceCloseTags,
-} from "../src/utils"
+import { htmlToJsx } from "../src/core"
 
-describe("replaceAttrNames", () => {
-  it("Default", () => {
-    const result = replaceAttrNames(`<p class="test" data-a="test">a</p>`)
-    expect(result).toEqual(`<p className="test" data-a="test">a</p>`)
-  })
-
-  it("Default with comment", () => {
-    const result = replaceAttrNames(`<p class="test">a</p><!-- class= -->`)
-    expect(result).toEqual(`<p className="test">a</p><!-- class= -->`)
-  })
-
-  it("Default with newline", () => {
-    const result = replaceAttrNames(`<p \nclass="test"\ndata-a="test"\n>a</p>`)
-    expect(result).toEqual(`<p \nclassName="test"\ndata-a="test"\n>a</p>`)
-  })
-})
-
-describe("replaceStyleAttrs", () => {
-  it("Default", () => {
-    const result = replaceStyleAttrs(
-      `<p style="display: block; border-radius: 8px">b</p>`
+describe("htmlToJsx", () => {
+  it("converts common React attributes and void elements", async () => {
+    const result = await htmlToJsx(
+      `<label for="name" class="field"><img src="/a.jpg" alt="A"><input id="name" readonly></label>`,
     )
-    expect(result).toEqual(
-      `<p style={{ display: "block", borderRadius: "8px" }}>b</p>`
+
+    expect(result.code).toContain('className="field"')
+    expect(result.code).toContain('htmlFor="name"')
+    expect(result.code).toContain('<img src="/a.jpg" alt="A" />')
+    expect(result.code).toContain("readOnly")
+  })
+
+  it("parses complex inline styles without splitting data URLs", async () => {
+    const result = await htmlToJsx(
+      `<div style="background-image: url(data:image/svg+xml;base64,PHN2Zz4=); border-radius: 8px"></div>`,
     )
+
+    expect(result.code).toContain("backgroundImage")
+    expect(result.code).toContain("data:image/svg+xml;base64,PHN2Zz4=")
+    expect(result.code).toContain("borderRadius")
+    expect(result.warnings).toEqual([])
   })
 
-  it("Default with css variables", () => {
-    const result = replaceStyleAttrs(
-      `<p style="display: block; --test: 8px">b</p>`
+  it("keeps data and aria attributes", async () => {
+    const result = await htmlToJsx(
+      `<button data-id="42" aria-label="Open">Open</button>`,
     )
-    expect(result).toEqual(
-      `<p style={{ display: "block", "--test": "8px" }}>b</p>`
+
+    expect(result.code).toContain('data-id="42"')
+    expect(result.code).toContain('aria-label="Open"')
+  })
+
+  it("omits string event handlers with a warning", async () => {
+    const result = await htmlToJsx(`<button onclick="alert(1)">Open</button>`)
+
+    expect(result.code).not.toContain("onclick")
+    expect(result.code).not.toContain("onClick")
+    expect(result.warnings.some((warning) => warning.code === "event-handler-omitted")).toBe(true)
+  })
+
+  it("handles script and style text safely", async () => {
+    const result = await htmlToJsx(
+      `<style>.a { color: red; }</style><script>const value = \`x${"${y}"}\`</script>`,
     )
-  })
-})
 
-describe("replaceStyleTags", () => {
-  it("Default", () => {
-    const result = replaceStyleTags(
-      `<style>.test > a { display: block; }</style>`
+    expect(result.code).toContain("dangerouslySetInnerHTML")
+    expect(result.code).toContain("const value")
+  })
+
+  it("supports SVG attributes", async () => {
+    const result = await htmlToJsx(
+      `<svg viewBox="0 0 10 10"><path stroke-width="2" fill-rule="evenodd"></path></svg>`,
     )
-    expect(result).toEqual(
-      `<style dangerouslySetInnerHTML={{ __html: \`.test > a { display: block; }\` }} />`
-    )
+
+    expect(result.code).toContain('viewBox="0 0 10 10"')
+    expect(result.code).toContain('strokeWidth="2"')
+    expect(result.code).toContain('fillRule="evenodd"')
   })
 
-  it("Default with newline", () => {
-    const result = replaceStyleTags(
-      `<style>\n.test > a {\ndisplay: block;\n}\n</style>`
-    )
-    expect(result).toEqual(
-      `<style dangerouslySetInnerHTML={{ __html: \`\n.test > a {\ndisplay: block;\n}\n\` }} />`
-    )
-  })
-})
+  it("can wrap output as a component", async () => {
+    const result = await htmlToJsx(`<main>Hello</main>`, {
+      mode: "component",
+      componentName: "Hero",
+    })
 
-describe("replaceScriptTags", () => {
-  it("Default", () => {
-    const result = replaceScriptTags(`<script>console.log("test")</script>`)
-    expect(result).toEqual(
-      `<script dangerouslySetInnerHTML={{ __html: \`console.log(\"test\")\` }} />`
-    )
+    expect(result.code).toContain("export default function Hero()")
+    expect(result.code).toContain("<main>Hello</main>")
   })
 
-  it("Default with newline", () => {
-    const result = replaceScriptTags(`<script>\nconsole.log("test")\n</script>`)
-    expect(result).toEqual(
-      `<script dangerouslySetInnerHTML={{ __html: \`\nconsole.log(\"test\")\n\` }} />`
-    )
-  })
-})
+  it("only collapses non-void empty elements when requested", async () => {
+    const normal = await htmlToJsx(`<div></div><img src="a">`)
+    const collapsed = await htmlToJsx(`<div></div>`, {
+      collapseEmptyElements: true,
+    })
 
-describe("replaceCommentTags", () => {
-  it("Default", () => {
-    const result = replaceCommentTags(`<!-- a --><p>b</p><!-- c -->`)
-    expect(result).toEqual(`{/* a */}<p>b</p>{/* c */}`)
-  })
-
-  it("Default with newline", () => {
-    const result = replaceCommentTags(`<!-- aaa\naaa --><p>b</p><!-- c -->`)
-    expect(result).toEqual(`{/* aaa\naaa */}<p>b</p>{/* c */}`)
-  })
-})
-
-describe("replaceSingleTags", () => {
-  it("Default", () => {
-    const result = replaceSingleTags(`<meta name="viewport">`)
-    expect(result).toEqual(`<meta name="viewport" />`)
-  })
-
-  it("Default with newline", () => {
-    const result = replaceSingleTags(`<meta\n name="viewport"\n>`)
-    expect(result).toEqual(`<meta\n name="viewport"\n />`)
-  })
-})
-
-describe("replaceCloseTags", () => {
-  it("Default", () => {
-    const result = replaceCloseTags(`<p class="a"></p><div></div><a></a>`)
-    expect(result).toEqual(`<p class="a" /><div /><a />`)
-  })
-
-  it("Default with newline", () => {
-    const result = replaceCloseTags(
-      `<p class="a">\n</p>\n<div>\n</div>\n<a>\n</a>`
-    )
-    expect(result).toEqual(`<p class="a" />\n<div />\n<a />`)
+    expect(normal.code).toContain("<div></div>")
+    expect(normal.code).toContain('<img src="a" />')
+    expect(collapsed.code).toContain("<div />")
   })
 })
