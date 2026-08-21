@@ -112,7 +112,7 @@ const attrNames: Record<string, string> = {
   formtarget: "formTarget",
   frameborder: "frameBorder",
   hreflang: "hrefLang",
-  http-equiv: "httpEquiv",
+  "http-equiv": "httpEquiv",
   inputmode: "inputMode",
   keyparams: "keyParams",
   keytype: "keyType",
@@ -177,9 +177,8 @@ function serializeAttrs(attrs: AttrNode[] = [], warnings: HtmlToJsxWarning[]) {
 
   for (const attr of attrs) {
     const sourceName = attr.prefix ? `${attr.prefix}:${attr.name}` : attr.name
-    const lowerName = sourceName.toLowerCase()
 
-    if (/^on[a-z]/i.test(lowerName)) {
+    if (/^on[a-z]/i.test(sourceName)) {
       warnings.push({
         code: "event-handler-omitted",
         message: `HTML event handler \`${sourceName}\` was omitted because a string handler is not equivalent to a React callback.`,
@@ -208,17 +207,18 @@ function serializeAttrs(attrs: AttrNode[] = [], warnings: HtmlToJsxWarning[]) {
 
 function serializeText(value: string) {
   if (!value) return ""
-
-  if (/[<{]/.test(value)) {
-    return `{${JSON.stringify(value)}}`
-  }
-
-  return value
+  return /[<{]/.test(value) ? `{${JSON.stringify(value)}}` : value
 }
 
-function serializeChildren(node: AstNode, warnings: HtmlToJsxWarning[]) {
+function serializeChildren(
+  node: AstNode,
+  warnings: HtmlToJsxWarning[],
+  options: HtmlToJsxOptions,
+) {
   const children = node.tagName === "template" ? node.content?.childNodes : node.childNodes
-  return (children || []).map((child) => serializeNode(child, warnings)).join("")
+  return (children || [])
+    .map((child) => serializeNode(child, warnings, options))
+    .join("")
 }
 
 function serializeRawElement(node: AstNode, warnings: HtmlToJsxWarning[]) {
@@ -233,7 +233,11 @@ function serializeRawElement(node: AstNode, warnings: HtmlToJsxWarning[]) {
   return `<${tagName}${attrs} dangerouslySetInnerHTML={{ __html: ${JSON.stringify(rawValue)} }} />`
 }
 
-function serializeNode(node: AstNode, warnings: HtmlToJsxWarning[]): string {
+function serializeNode(
+  node: AstNode,
+  warnings: HtmlToJsxWarning[],
+  options: HtmlToJsxOptions,
+): string {
   if (node.nodeName === "#text") {
     return serializeText(node.value || "")
   }
@@ -253,7 +257,7 @@ function serializeNode(node: AstNode, warnings: HtmlToJsxWarning[]): string {
 
   const tagName = node.tagName
   if (!tagName) {
-    return serializeChildren(node, warnings)
+    return serializeChildren(node, warnings, options)
   }
 
   if (tagName === "script" || tagName === "style") {
@@ -261,13 +265,13 @@ function serializeNode(node: AstNode, warnings: HtmlToJsxWarning[]): string {
   }
 
   const attrs = serializeAttrs(node.attrs, warnings)
-  const children = serializeChildren(node, warnings)
+  const children = serializeChildren(node, warnings, options)
 
   if (voidTags.has(tagName)) {
     return `<${tagName}${attrs} />`
   }
 
-  if (!children && defaultOptions.collapseEmptyElements) {
+  if (!children && options.collapseEmptyElements) {
     return `<${tagName}${attrs} />`
   }
 
@@ -280,14 +284,12 @@ function hasDocumentMarkup(html: string) {
 
 function wrapTopLevel(source: string) {
   const trimmed = source.trim()
-  if (!trimmed) return "<></>"
-  return `<>${trimmed}</>`
+  return trimmed ? `<>${trimmed}</>` : "<></>"
 }
 
 function validComponentName(value: string) {
   const clean = value.trim()
-  if (/^[A-Z_$][\w$]*$/.test(clean)) return clean
-  return defaultOptions.componentName
+  return /^[A-Z_$][\w$]*$/.test(clean) ? clean : defaultOptions.componentName
 }
 
 export async function htmlToJsx(
@@ -297,7 +299,7 @@ export async function htmlToJsx(
   const opts = { ...defaultOptions, ...options }
   const warnings: HtmlToJsxWarning[] = []
   const tree = (hasDocumentMarkup(html) ? parse(html) : parseFragment(html)) as unknown as AstNode
-  const raw = serializeChildren(tree, warnings)
+  const raw = serializeChildren(tree, warnings, opts)
   const jsx = wrapTopLevel(raw)
 
   const source =
