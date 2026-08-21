@@ -207,7 +207,23 @@ function serializeAttrs(attrs: AttrNode[] = [], warnings: HtmlToJsxWarning[]) {
 
 function serializeText(value: string) {
   if (!value) return ""
-  return /[<{]/.test(value) ? `{${JSON.stringify(value)}}` : value
+
+  return value.replace(/[&<>{}]/g, (char) => {
+    switch (char) {
+      case "&":
+        return "&amp;"
+      case "<":
+        return "&lt;"
+      case ">":
+        return "&gt;"
+      case "{":
+        return "&#123;"
+      case "}":
+        return "&#125;"
+      default:
+        return char
+    }
+  })
 }
 
 function serializeChildren(
