@@ -24,7 +24,7 @@ export type HtmlToJsxResult = {
 }
 
 export const defaultOptions: HtmlToJsxOptions = {
-  mode: "fragment",
+  mode: "component",
   componentName: "Component",
   indentSize: 2,
   collapseEmptyElements: false,
@@ -161,7 +161,10 @@ function serializeStyle(value: string, warnings: HtmlToJsxWarning[]) {
     if (items.length === 0) return "{{}}"
 
     return `{{ ${items
-      .map(([key, itemValue]) => `${JSON.stringify(key)}: ${JSON.stringify(itemValue)}`)
+      .map(
+        ([key, itemValue]) =>
+          `${JSON.stringify(key)}: ${JSON.stringify(itemValue)}`,
+      )
       .join(", ")} }}`
   } catch {
     warnings.push({
@@ -231,7 +234,8 @@ function serializeChildren(
   warnings: HtmlToJsxWarning[],
   options: HtmlToJsxOptions,
 ) {
-  const children = node.tagName === "template" ? node.content?.childNodes : node.childNodes
+  const children =
+    node.tagName === "template" ? node.content?.childNodes : node.childNodes
   return (children || [])
     .map((child) => serializeNode(child, warnings, options))
     .join("")
@@ -266,7 +270,8 @@ function serializeNode(
   if (node.nodeName === "#documentType") {
     warnings.push({
       code: "doctype-omitted",
-      message: "The HTML doctype was omitted because it is not valid inside JSX.",
+      message:
+        "The HTML doctype was omitted because it is not valid inside JSX.",
     })
     return ""
   }
@@ -314,7 +319,9 @@ export async function htmlToJsx(
 ): Promise<HtmlToJsxResult> {
   const opts = { ...defaultOptions, ...options }
   const warnings: HtmlToJsxWarning[] = []
-  const tree = (hasDocumentMarkup(html) ? parse(html) : parseFragment(html)) as unknown as AstNode
+  const tree = (hasDocumentMarkup(html)
+    ? parse(html)
+    : parseFragment(html)) as unknown as AstNode
   const raw = serializeChildren(tree, warnings, opts)
   const jsx = wrapTopLevel(raw)
 

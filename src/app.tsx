@@ -89,12 +89,14 @@ export default function App() {
                   onChange={(event) =>
                     updateOption(
                       "mode",
-                      event.target.value === "component" ? "component" : "fragment",
+                      event.target.value === "component"
+                        ? "component"
+                        : "fragment",
                     )
                   }
                 >
-                  <option value="fragment">JSX Fragment</option>
                   <option value="component">React Component</option>
+                  <option value="fragment">JSX Fragment</option>
                 </select>
               </label>
 
@@ -104,7 +106,9 @@ export default function App() {
                   <input
                     className="option-content-input"
                     value={options.componentName}
-                    onChange={(event) => updateOption("componentName", event.target.value)}
+                    onChange={(event) =>
+                      updateOption("componentName", event.target.value)
+                    }
                   />
                 </label>
               )}
