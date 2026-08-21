@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from "react"
+import { useEffect, useMemo, useRef, useState } from "react"
 
 import {
   defaultOptions,
@@ -19,6 +19,10 @@ export default function App() {
   const [mainOutput, setMainOutput] = useState("")
   const [warnings, setWarnings] = useState<HtmlToJsxWarning[]>([])
   const [isConverting, setIsConverting] = useState(false)
+  const [copyStatus, setCopyStatus] = useState<"idle" | "copied" | "error">(
+    "idle",
+  )
+  const copyStatusTimer = useRef<ReturnType<typeof setTimeout>>(undefined)
 
   useEffect(() => {
     let active = true
@@ -44,11 +48,30 @@ export default function App() {
     [warnings],
   )
 
+  useEffect(
+    () => () => {
+      clearTimeout(copyStatusTimer.current)
+    },
+    [],
+  )
+
   function updateOption<Key extends keyof HtmlToJsxOptions>(
     key: Key,
     value: HtmlToJsxOptions[Key],
   ) {
     setOptions((current) => ({ ...current, [key]: value }))
+  }
+
+  async function copyOutput() {
+    try {
+      await navigator.clipboard.writeText(mainOutput)
+      setCopyStatus("copied")
+    } catch {
+      setCopyStatus("error")
+    }
+
+    clearTimeout(copyStatusTimer.current)
+    copyStatusTimer.current = setTimeout(() => setCopyStatus("idle"), 2000)
   }
 
   return (
@@ -169,6 +192,32 @@ export default function App() {
             <label htmlFor="editor-textarea-after" className="editor-label">
               {isConverting ? "Converting..." : "JSX"}
             </label>
+            <button
+              type="button"
+              className="editor-copy"
+              onClick={() => void copyOutput()}
+              disabled={isConverting || !mainOutput}
+              aria-label="JSXをクリップボードにコピー"
+              title="JSXをコピー"
+            >
+              {copyStatus === "copied" ? (
+                <svg viewBox="0 0 24 24" aria-hidden="true">
+                  <path d="m5 12 4 4L19 6" />
+                </svg>
+              ) : (
+                <svg viewBox="0 0 24 24" aria-hidden="true">
+                  <rect x="8" y="8" width="11" height="11" rx="2" />
+                  <path d="M16 8V7a2 2 0 0 0-2-2H7a2 2 0 0 0-2 2v7a2 2 0 0 0 2 2h1" />
+                </svg>
+              )}
+              <span aria-live="polite">
+                {copyStatus === "copied"
+                  ? "コピーしました！"
+                  : copyStatus === "error"
+                    ? "コピー失敗"
+                    : "コピー"}
+              </span>
+            </button>
             <textarea
               className="editor-textarea"
               id="editor-textarea-after"

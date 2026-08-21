@@ -182,6 +182,52 @@
   white-space: nowrap;
 }
 
+.editor-copy {
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  z-index: 1;
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  min-height: 28px;
+  padding: 5px 8px;
+  background: var(--theme-bg-1);
+  border: 1px solid var(--theme-tx-4);
+  border-radius: 5px;
+  color: var(--theme-tx-3);
+  font: 0.75rem/1 var(--font-sans-ja);
+  cursor: pointer;
+}
+
+.editor-copy svg {
+  width: 15px;
+  height: 15px;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 2;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.editor-copy:focus-visible {
+  border-color: var(--theme-secondary);
+  outline: 2px solid var(--theme-secondary);
+  outline-offset: 2px;
+}
+
+.editor-copy:disabled {
+  cursor: default;
+  opacity: 0.45;
+}
+
+@media (hover: hover) {
+  .editor-copy:not(:disabled):hover {
+    border-color: var(--theme-secondary);
+    color: var(--theme-tx-2);
+  }
+}
+
 .editor-textarea {
   width: 100%;
   min-width: 0;
