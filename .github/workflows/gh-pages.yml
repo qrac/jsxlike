@@ -1,44 +1,51 @@
-name: Deploy to GitHub Pages
+name: Build and deploy
 
 on:
+  pull_request:
   push:
     branches: ["main"]
   workflow_dispatch:
 
 permissions:
   contents: read
-  pages: write
-  id-token: write
 
 jobs:
   build:
     runs-on: ubuntu-latest
     steps:
-      - name: チェックアウト
-        uses: actions/checkout@v3
+      - name: Checkout
+        uses: actions/checkout@v7
 
-      - name: Node.js をセットアップ
-        uses: actions/setup-node@v3
+      - name: Setup Node.js
+        uses: actions/setup-node@v7
         with:
-          node-version: 20
+          node-version: 24
+          package-manager-cache: false
 
-      - name: 依存関係をインストール
-        run: npm ci
+      - name: Install dependencies
+        run: npm install
 
-      - name: ビルド
-        run: npm run build
+      - name: Test and build
+        run: npm run check
 
-      - name: アーティファクトをアップロード
+      - name: Upload Pages artifact
+        if: github.event_name != 'pull_request'
         uses: actions/upload-pages-artifact@v3
         with:
-          path: ./dist
+          path: ./dist/web
 
   deploy:
+    if: github.event_name != 'pull_request'
     needs: build
     runs-on: ubuntu-latest
     permissions:
       pages: write
       id-token: write
+      actions: read
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
     steps:
-      - name: デプロイ
-        uses: actions/deploy-pages@v4
+      - name: Deploy Pages
+        id: deployment
+        uses: actions/deploy-pages@v5

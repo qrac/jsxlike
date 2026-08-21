@@ -1,14 +1,14 @@
 {
   "compilerOptions": {
-    "target": "esnext",
-    "module": "esnext",
-    "allowSyntheticDefaultImports": true,
+    "target": "ES2022",
+    "module": "ESNext",
     "moduleResolution": "Bundler",
+    "allowSyntheticDefaultImports": true,
     "resolveJsonModule": true,
     "skipLibCheck": true,
-    "noErrorTruncation": true,
+    "strict": true,
     "jsx": "react-jsx",
-    "types": ["vite/client"]
+    "types": ["vite/client", "vitest/globals"]
   },
-  "include": ["./vite.config.ts", "src"]
+  "include": ["src/app.tsx", "src/core.ts", "src/main.tsx", "vite.config.ts", "vitest.config.ts", "test"]
 }
